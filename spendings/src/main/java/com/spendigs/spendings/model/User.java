@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
@@ -14,7 +15,7 @@ public class User {
 
     int id;
     String name;
-    List<Spending> spendings = new ArrayList<>();
+    CopyOnWriteArrayList<Spending> spendings = new CopyOnWriteArrayList<>();
 
     public User(String name){
         this.id = USER_COUNT.getAndIncrement();

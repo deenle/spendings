@@ -5,7 +5,6 @@ import com.spendigs.spendings.dto.SpendingDTO;
 import com.spendigs.spendings.model.User;
 import com.spendigs.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
