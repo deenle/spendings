@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -20,5 +21,12 @@ public class UserService {
         return users.stream()
                 .filter(user -> user.getId() == userId)
                 .findFirst().orElse(null);
+    }
+
+    // Necessity of method?
+    public List<User> findUser(String userName){
+        return  users.stream()
+                .filter(user -> user.getName().equalsIgnoreCase(userName))
+                .collect(Collectors.toList());
     }
 }

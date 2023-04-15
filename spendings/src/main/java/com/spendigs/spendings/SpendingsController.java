@@ -18,12 +18,12 @@ public class SpendingsController {
     private final UserService userService;
 
     @GetMapping("/categories")
-    public Set<String> getCategories(){
+    public Set<String> getCategories(@RequestParam String userName){
+
         return Spending.getSpendingCategories();
     }
 
     @PostMapping("/putspending")
-//    public void putSpending(@RequestBody String name, Spending spending){
     public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader int userId){
 
         System.out.println("USER: " + userId + ", Spending: " + spendingDTO);

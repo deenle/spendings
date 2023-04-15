@@ -1,4 +1,4 @@
-**Регистрируем траты**
+DONE! **Регистрируем траты** 
 
 POST /v1/putspending
 X-USER-ID: userID
@@ -34,3 +34,6 @@ X-USER-ID: userID
 "sport": 10,
 "food": 60000
 }
+
+------
+"X-USER-ID" - how to use header for variable?
