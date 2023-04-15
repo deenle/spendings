@@ -1,21 +1,23 @@
 package com.spendigs.spendings.model;
 
-import com.spendigs.spendings.SpendingsController;
 import com.spendigs.spendings.controller.Spending;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@Component
 @Data
 public class User {
+
+    private static final AtomicInteger USER_COUNT = new AtomicInteger(0);
+
     int id;
     String name;
-    List<Spending> spendings;
+    List<Spending> spendings = new ArrayList<>();
 
     public User(String name){
-        this.id = SpendingsController.USER_COUNT;
+        this.id = USER_COUNT.getAndIncrement();
         this.name = name;
     }
 

@@ -1,18 +1,22 @@
 package com.spendigs.spendings;
 
 import com.spendigs.spendings.controller.Spending;
+import com.spendigs.spendings.dto.SpendingDTO;
 import com.spendigs.spendings.model.User;
+import com.spendigs.spendings.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1")
+@RequiredArgsConstructor
 public class SpendingsController {
 
-//    private final Set<String> categories = new HashSet<>();
-    public static int USER_COUNT; // For User id++
-    private final List<User> users = new ArrayList<>();
+    private final UserService userService;
 
     @GetMapping("/categories")
     public Set<String> getCategories(){
@@ -21,39 +25,43 @@ public class SpendingsController {
 
     @PostMapping("/putspending")
 //    public void putSpending(@RequestBody String name, Spending spending){
-    public void putSpending(@RequestBody User user){
-        /**
-         How to read new Spending from POST request and add that spending (Jackson?)???
-         */
-        Spending spending = user.getSpending(0); // parsing spending at zero position?
-        if (isNewUser(user)){
-            users.add(user); // no need to add new spending ?
-            USER_COUNT++;
-        } else {
-            int id = user.getId();
-            User existedUser = users.get(id);
-            existedUser.addSpending(spending);
-            users.set(id, existedUser);
+    public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader int userId){
+
+        System.out.println("USER: " + userId + ", Spending: " + spendingDTO);
+
+        User user = userService.findUser(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
-        System.out.println(user.getName() + " lost money on: " + spending);
+
+        Spending spending = new Spending(spendingDTO.getCategory(), spendingDTO.getAmount());
+        user.addSpending(spending);
     }
 
     @GetMapping("/statistic")
-    public void getStatistic(@RequestParam("user") String user){
-        List<Spending> userSpendings = users.get(users.indexOf(user)).getSpendings();
-
-        System.out.println("Spendings for user " + user + ":\n");
-
-        for (Spending spending : userSpendings) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(spending.getCategory()).append(" : ")
-                    .append(spending.getAmount()).append(" : ")
-                    .append(spending.getDate()).append("\n");
-            System.out.println(sb);
+    public Map<String, Long> getStatistic(@RequestHeader int userId){
+        /*looking for User*/
+        User currentUser = userService.findUser(userId);
+        if (currentUser == null) {
+            throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
+        List<Spending> userSpendings = currentUser.getSpendings();
+
+        Map<String, List<Spending>> collect = userSpendings.stream()
+                .collect(Collectors.groupingBy(spending -> spending.getCategory()));
+        System.out.println(collect);
+
+        Map<String, Long> statistic = new HashMap<>();
+        for (String category : collect.keySet()) {
+            statistic.put(category, collect.get(category).stream()
+                    .mapToLong(spending -> spending.getAmount()).sum());
+        }
+        System.out.println(statistic);
+        return statistic;
     }
 
-    private boolean isNewUser(User user) {
+
+    /*private boolean isNewUser(User user) {
         return !users.contains(user);
-    }
+    }*/
 }

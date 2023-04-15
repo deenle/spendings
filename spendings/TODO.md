@@ -19,7 +19,12 @@ X-USER-ID: userID
 
 --------
 
-**Запрос статистики трат за месяц по конкретному пользователю**
+**Запрос статистики трат за месяц / год по конкретному пользователю**
+
+@RequestParam
+
+if null - return all
+if year - return full year 
 
 GET /v1/statistic?year=2023&month=JAN
 X-USER-ID: userID
