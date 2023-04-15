@@ -18,9 +18,12 @@ public class SpendingsController {
     private final UserService userService;
 
     @GetMapping("/categories")
-    public Set<String> getCategories(@RequestParam String userName){
-
-        return Spending.getSpendingCategories();
+    public Set<String> getCategories(@RequestParam int userId){
+        // work with HEADER or URI param?
+        // userName or userId is better?
+        User user = userService.findUser(userId);
+        List<Spending> spendings = user.getSpendings();
+        return spendings.stream().map(Spending::getCategory).collect(Collectors.toSet());
     }
 
     @PostMapping("/putspending")
