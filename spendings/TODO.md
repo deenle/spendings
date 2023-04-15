@@ -1,7 +1,7 @@
 **Регистрируем траты**
 
 POST /v1/putspending
-X-USER-ID: asdfghjkl
+X-USER-ID: userID
 
 {
 "category": "entertaiment",
@@ -13,16 +13,21 @@ X-USER-ID: asdfghjkl
 **Запрос существующих категорий для пользователя**
 
 GET /v1/categories
-X-USER-ID: asdfghjk
+X-USER-ID: userID
 
 ["entertaiment", "sport", "food"]
 
 --------
 
-**Запрос статистики трат за месяц по конкретному пользователю**
+**Запрос статистики трат за месяц / год по конкретному пользователю**
+
+@RequestParam
+
+if null - return all
+if year - return full year 
 
 GET /v1/statistic?year=2023&month=JAN
-X-USER-ID: asdfghjk
+X-USER-ID: userID
 
 {
 "entertaiment": 5000,
