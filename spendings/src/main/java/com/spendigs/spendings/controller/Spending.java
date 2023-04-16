@@ -1,6 +1,8 @@
 package com.spendigs.spendings.controller;
 
 import lombok.Data;
+
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,10 +21,10 @@ public class Spending {
         long amount;
         LocalDate date; // to add by server
 
-        public Spending(String category, long amount){
+        public Spending(String category, long amount, Clock createdTime){
                 this.category = checkCategory(category);
                 this.amount = amount;
-                this.date = LocalDate.now();
+                this.date = LocalDate.now(createdTime);
         }
 
         private String checkCategory(String category) {

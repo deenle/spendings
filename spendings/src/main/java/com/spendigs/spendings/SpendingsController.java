@@ -7,6 +7,11 @@ import com.spendigs.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+import java.time.Clock;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,6 +21,7 @@ import java.util.stream.Collectors;
 public class SpendingsController {
 
     private final UserService userService;
+    Clock clock = Clock.systemDefaultZone();
 
     @GetMapping("/categories")
     public Set<String> getCategories(@RequestParam int userId){
@@ -36,17 +42,32 @@ public class SpendingsController {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
 
-        Spending spending = new Spending(spendingDTO.getCategory(), spendingDTO.getAmount());
+        Spending spending = new Spending(spendingDTO.getCategory(), spendingDTO.getAmount(), clock);
         user.addSpending(spending);
     }
 
     @GetMapping("/statistic")
-    public Map<String, Long> getStatistic(@RequestHeader int userId){
-        /*looking for User*/
+    public Map<String, Long> getStatistic(@RequestHeader int userId /*,
+                                          @RequestParam @Min(1990) @Max(3000) int year,
+                                          @RequestParam String month*/){
+        /*Looking for User*/
         User currentUser = userService.findUser(userId);
         if (currentUser == null) {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
+        /*Checking URI parameters*/
+        //null, negative, wrong month. Use @Valid?
+        //how to check Enum fields Month using standard LocalDate class
+
+        /*Running user case method*/
+       /*
+        if (year == 0 && month == null) {
+            return calculateSpendingsTotal(currentUser);
+        } else if (month == null || "".equalsIgnoreCase(month)) {
+            return calculateSpendingsYear(currentUser, year);
+        } else return calculateSpendingsYearMonth(currentUser, year, month);
+        */
+
         List<Spending> userSpendings = currentUser.getSpendings();
 
         Map<String, List<Spending>> collect = userSpendings.stream()
