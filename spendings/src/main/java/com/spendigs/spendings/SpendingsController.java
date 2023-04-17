@@ -3,13 +3,15 @@ package com.spendigs.spendings;
 import com.spendigs.spendings.controller.Spending;
 import com.spendigs.spendings.dto.SpendingDTO;
 import com.spendigs.spendings.model.User;
+import com.spendigs.spendings.service.StatisticsService;
 import com.spendigs.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.Clock;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -18,10 +20,12 @@ import java.util.stream.Collectors;
 public class SpendingsController {
 
     private final UserService userService;
-    Clock clock = Clock.systemDefaultZone();
+    private final StatisticsService statisticsService; // TODO: okay to do like that?
+    public static final Clock clock = Clock.systemDefaultZone();
 
+    // Return All Categories where User spent money
     @GetMapping("/categories")
-    public Set<String> getCategories(@RequestParam int userId){
+    public Set<String> getCategories(@RequestHeader("USER-ID") int userId) {
         // work with HEADER or URI param?
         // userName or userId is better?
         User user = userService.findUser(userId);
@@ -29,8 +33,9 @@ public class SpendingsController {
         return spendings.stream().map(Spending::getCategory).collect(Collectors.toSet());
     }
 
+    // Add Spending by User
     @PostMapping("/putspending")
-    public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader int userId){
+    public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader("USER-ID") int userId) {
 
         System.out.println("USER: " + userId + ", Spending: " + spendingDTO);
 
@@ -43,101 +48,18 @@ public class SpendingsController {
         user.addSpending(spending);
     }
 
+    // Collect Spending Statistic per User
     @GetMapping("/statistic")
-    public Map<String, Long> getStatistic(@RequestHeader int userId,
+    public Map<String, Long> getStatistic(@RequestHeader("USER-ID") int userId,
                                           @RequestParam(required = false) Integer year,
-                                          @RequestParam(required = false) String month){
-        /*Looking for User*/
+                                          @RequestParam(required = false) String month) {
+        /* Looking for User */
         User currentUser = userService.findUser(userId);
         if (currentUser == null) {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
-        /*Check URI parameters: null, negative, wrong month - need to use separate methods?*/
-
-        /*Choosing user case method*/ //need to correct conditions?
-        if ( (year == null && month == null) || (year != null && (year < 1900 || year >= LocalDate.MAX.getYear())) ) {
-            return calculateSpendingsTotal(currentUser);
-        } else if (year != null && (month == null || "".equalsIgnoreCase(month))) {
-            return calculateSpendingsYear(currentUser, year);
-        } else {
-            return calculateSpendingsYearMonth(currentUser, year, month);
-        }
-    }
-
-    private Map<String, Long> calculateSpendingsYearMonth(User currentUser, Integer year, String month) {
-
-        if (year == null) {
-            year = LocalDate.now(clock).getYear();
-        }
-
-        List<Month> monthList = Arrays.asList(Month.values());
-        Month monthToFind = monthList.stream()
-                .filter(m -> m.toString().equalsIgnoreCase(month))
-                .findFirst().orElse(null);
-        if (monthToFind == null) {
-            return calculateSpendingsYear(currentUser, year);
-        }
-
-        Integer finalYear = year;
-        List<Spending> userSpendings = currentUser.getSpendings().stream()
-                .filter(spending -> ((spending.getDate().getYear()) == finalYear)
-                        && spending.getDate().getMonth().equals(monthToFind))
-                .toList();
-
-        Map<String, List<Spending>> collect = userSpendings.stream()
-                .collect(Collectors.groupingBy(Spending::getCategory));
-
-        System.out.println(collect);
-
-        Map<String, Long> statistic = new HashMap<>();
-
-        for (String category : collect.keySet()) {
-            statistic.put(category, collect.get(category).stream()
-                    .mapToLong(Spending::getAmount)
-                    .sum());
-        }
-        System.out.println(statistic);
-        return statistic;
-    }
-
-    private Map<String, Long> calculateSpendingsYear(User currentUser, int year) {
-        // okay to use whole 'database' of spendings for memory usage?
-        List<Spending> userSpendings = currentUser.getSpendings().stream()
-                .filter(spending -> (spending.getDate().getYear()) == year)
-                .toList();
-
-        Map<String, List<Spending>> collect = userSpendings.stream()
-                .collect(Collectors.groupingBy(Spending::getCategory));
-
-        System.out.println(collect);
-
-        Map<String, Long> statistic = new HashMap<>();
-
-        for (String category : collect.keySet()) {
-            statistic.put(category, collect.get(category).stream()
-                    .mapToLong(Spending::getAmount)
-                    .sum());
-        }
-        System.out.println(statistic);
-        return statistic;
-    }
-
-    private Map<String, Long> calculateSpendingsTotal(User currentUser) {
-        List<Spending> userSpendings = currentUser.getSpendings();
-
-        Map<String, List<Spending>> collect = userSpendings.stream()
-                .collect(Collectors.groupingBy(Spending::getCategory));
-
-        System.out.println(collect);
-
-        Map<String, Long> statistic = new HashMap<>();
-        for (String category : collect.keySet()) {
-            statistic.put(category, collect.get(category).stream()
-                    .mapToLong(Spending::getAmount)
-                    .sum());
-        }
-        System.out.println(statistic);
-        return statistic;
+        /* Transfer to StatisticService ==> */
+        return statisticsService.calculateSpendingsByUser(currentUser, year, month);
     }
 
 
