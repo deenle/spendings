@@ -22,17 +22,13 @@ public class Spending {
         LocalDate date; // to add by server
 
         public Spending(String category, long amount, Clock createdTime){
-                this.category = checkCategory(category);
+                category = category.toUpperCase();
+                categories.add(category);
+                this.category = category;
                 this.amount = amount;
                 this.date = LocalDate.now(createdTime);
         }
 
-        private String checkCategory(String category) {
-                if (!categories.contains(category)) {
-                        categories.add(category.toUpperCase());
-                }
-                return category.toUpperCase();
-        }
 
         public static Set<String> getSpendingCategories(){
                 return categories;

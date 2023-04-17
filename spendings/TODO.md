@@ -35,4 +35,4 @@ X-USER-ID: userID
 }
 
 ------
-"X-USER-ID" - how to use header for variable?
+"X-USER-ID" - how to use header for exact variable name?

@@ -2,8 +2,6 @@ package com.spendigs.spendings.service;
 
 import com.spendigs.spendings.model.User;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;

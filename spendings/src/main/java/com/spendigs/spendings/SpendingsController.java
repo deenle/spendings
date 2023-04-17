@@ -6,12 +6,8 @@ import com.spendigs.spendings.model.User;
 import com.spendigs.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,47 +45,31 @@ public class SpendingsController {
 
     @GetMapping("/statistic")
     public Map<String, Long> getStatistic(@RequestHeader int userId,
-                                          @RequestParam int year,
-                                          @RequestParam String month){
+                                          @RequestParam(required = false) Integer year,
+                                          @RequestParam(required = false) String month){
         /*Looking for User*/
         User currentUser = userService.findUser(userId);
         if (currentUser == null) {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
-        /*Checking URI parameters*/
-        //null, negative, wrong month. Use @Valid?
-        //how to check Enum fields Month using standard LocalDate class
-//        Enum<Month>
+        /*Check URI parameters: null, negative, wrong month - need to use separate methods?*/
 
-        /*Running user case method*/
-        if (year < 1900 || year >=3000 ) {
+        /*Choosing user case method*/ //TODO need to correct conditions!
+        if ( (year == null && month == null) || (year != null && (year < 1900 || year >= LocalDate.MAX.getYear())) ) {
             return calculateSpendingsTotal(currentUser);
-        } else if (month == null || "".equalsIgnoreCase(month)) {
+        } else if (year != null && (month == null || "".equalsIgnoreCase(month))) {
             return calculateSpendingsYear(currentUser, year);
         } else {
             return calculateSpendingsYearMonth(currentUser, year, month);
         }
-
-        /* Previous code to calculate total statistic
-        List<Spending> userSpendings = currentUser.getSpendings();
-
-        Map<String, List<Spending>> collect = userSpendings.stream()
-                .collect(Collectors.groupingBy(spending -> spending.getCategory()));
-        System.out.println(collect);
-
-        Map<String, Long> statistic = new HashMap<>();
-        for (String category : collect.keySet()) {
-            statistic.put(category, collect.get(category).stream()
-                    .mapToLong(spending -> spending.getAmount()).sum());
-        }
-        System.out.println(statistic);
-        return statistic;*/
     }
 
-    private Map<String, Long> calculateSpendingsYearMonth(User currentUser, int year, String month) {
-        //check Month in Enum<Month>
-        // if not exist -> run
-//        month = month.toUpperCase();
+    private Map<String, Long> calculateSpendingsYearMonth(User currentUser, Integer year, String month) {
+
+        if (year == null) {
+            year = LocalDate.now(clock).getYear();
+        }
+
         List<Month> monthList = Arrays.asList(Month.values());
         Month monthToFind = monthList.stream()
                 .filter(m -> m.toString().equalsIgnoreCase(month))
@@ -98,19 +78,23 @@ public class SpendingsController {
             return calculateSpendingsYear(currentUser, year);
         }
 
+        Integer finalYear = year;
         List<Spending> userSpendings = currentUser.getSpendings().stream()
-                .filter(spending -> ((spending.getDate().getYear()) == year) 
-                        && spending.getDate().getMonth().equals(monthToFind)).toList();
+                .filter(spending -> ((spending.getDate().getYear()) == finalYear)
+                        && spending.getDate().getMonth().equals(monthToFind))
+                .toList();
 
         Map<String, List<Spending>> collect = userSpendings.stream()
                 .collect(Collectors.groupingBy(Spending::getCategory));
+
         System.out.println(collect);
 
         Map<String, Long> statistic = new HashMap<>();
 
         for (String category : collect.keySet()) {
             statistic.put(category, collect.get(category).stream()
-                    .mapToLong(Spending::getAmount).sum());
+                    .mapToLong(Spending::getAmount)
+                    .sum());
         }
         System.out.println(statistic);
         return statistic;
@@ -124,13 +108,15 @@ public class SpendingsController {
 
         Map<String, List<Spending>> collect = userSpendings.stream()
                 .collect(Collectors.groupingBy(Spending::getCategory));
+
         System.out.println(collect);
 
         Map<String, Long> statistic = new HashMap<>();
 
         for (String category : collect.keySet()) {
             statistic.put(category, collect.get(category).stream()
-                    .mapToLong(Spending::getAmount).sum());
+                    .mapToLong(Spending::getAmount)
+                    .sum());
         }
         System.out.println(statistic);
         return statistic;
@@ -141,6 +127,7 @@ public class SpendingsController {
 
         Map<String, List<Spending>> collect = userSpendings.stream()
                 .collect(Collectors.groupingBy(Spending::getCategory));
+
         System.out.println(collect);
 
         Map<String, Long> statistic = new HashMap<>();
