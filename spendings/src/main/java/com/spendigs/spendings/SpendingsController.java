@@ -54,7 +54,7 @@ public class SpendingsController {
         }
         /*Check URI parameters: null, negative, wrong month - need to use separate methods?*/
 
-        /*Choosing user case method*/ //TODO need to correct conditions!
+        /*Choosing user case method*/ //need to correct conditions?
         if ( (year == null && month == null) || (year != null && (year < 1900 || year >= LocalDate.MAX.getYear())) ) {
             return calculateSpendingsTotal(currentUser);
         } else if (year != null && (month == null || "".equalsIgnoreCase(month))) {
