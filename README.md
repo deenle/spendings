@@ -1,3 +1,3 @@
 # spendings
-I hope it will be the app which helps you collect and ananlyze your daily spendings.
-Plan to use Java + Spring + REST API
+I hope it will be the app which helps you collect and analyze your daily spendings.
+Java + Spring + REST API

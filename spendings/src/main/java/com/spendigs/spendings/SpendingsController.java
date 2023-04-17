@@ -3,11 +3,15 @@ package com.spendigs.spendings;
 import com.spendigs.spendings.controller.Spending;
 import com.spendigs.spendings.dto.SpendingDTO;
 import com.spendigs.spendings.model.User;
+import com.spendigs.spendings.service.StatisticsService;
 import com.spendigs.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.time.Clock;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -16,9 +20,12 @@ import java.util.stream.Collectors;
 public class SpendingsController {
 
     private final UserService userService;
+    private final StatisticsService statisticsService; // TODO: okay to do like that?
+    public static final Clock clock = Clock.systemDefaultZone();
 
+    // Return All Categories where User spent money
     @GetMapping("/categories")
-    public Set<String> getCategories(@RequestParam int userId){
+    public Set<String> getCategories(@RequestHeader("USER-ID") int userId) {
         // work with HEADER or URI param?
         // userName or userId is better?
         User user = userService.findUser(userId);
@@ -26,8 +33,9 @@ public class SpendingsController {
         return spendings.stream().map(Spending::getCategory).collect(Collectors.toSet());
     }
 
+    // Add Spending by User
     @PostMapping("/putspending")
-    public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader int userId){
+    public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader("USER-ID") int userId) {
 
         System.out.println("USER: " + userId + ", Spending: " + spendingDTO);
 
@@ -36,30 +44,22 @@ public class SpendingsController {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
 
-        Spending spending = new Spending(spendingDTO.getCategory(), spendingDTO.getAmount());
+        Spending spending = new Spending(spendingDTO.getCategory(), spendingDTO.getAmount(), clock);
         user.addSpending(spending);
     }
 
+    // Collect Spending Statistic per User
     @GetMapping("/statistic")
-    public Map<String, Long> getStatistic(@RequestHeader int userId){
-        /*looking for User*/
+    public Map<String, Long> getStatistic(@RequestHeader("USER-ID") int userId,
+                                          @RequestParam(required = false) Integer year,
+                                          @RequestParam(required = false) String month) {
+        /* Looking for User */
         User currentUser = userService.findUser(userId);
         if (currentUser == null) {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
-        List<Spending> userSpendings = currentUser.getSpendings();
-
-        Map<String, List<Spending>> collect = userSpendings.stream()
-                .collect(Collectors.groupingBy(spending -> spending.getCategory()));
-        System.out.println(collect);
-
-        Map<String, Long> statistic = new HashMap<>();
-        for (String category : collect.keySet()) {
-            statistic.put(category, collect.get(category).stream()
-                    .mapToLong(spending -> spending.getAmount()).sum());
-        }
-        System.out.println(statistic);
-        return statistic;
+        /* Transfer to StatisticService ==> */
+        return statisticsService.calculateSpendingsByUser(currentUser, year, month);
     }
 
 
