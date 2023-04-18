@@ -6,6 +6,8 @@ import com.spendigs.spendings.model.User;
 import com.spendigs.spendings.service.StatisticsService;
 import com.spendigs.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Clock;
@@ -22,12 +24,11 @@ public class SpendingsController {
     private final UserService userService;
     private final StatisticsService statisticsService; // TODO: okay to do like that?
     public static final Clock clock = Clock.systemDefaultZone();
+    final Logger logger = LoggerFactory.getLogger(SpendingsController.class);
 
     // Return All Categories where User spent money
     @GetMapping("/categories")
     public Set<String> getCategories(@RequestHeader("USER-ID") int userId) {
-        // work with HEADER or URI param?
-        // userName or userId is better?
         User user = userService.findUser(userId);
         List<Spending> spendings = user.getSpendings();
         return spendings.stream().map(Spending::getCategory).collect(Collectors.toSet());
@@ -36,8 +37,8 @@ public class SpendingsController {
     // Add Spending by User
     @PostMapping("/putspending")
     public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader("USER-ID") int userId) {
-
-        System.out.println("USER: " + userId + ", Spending: " + spendingDTO);
+//        System.out.println("USER: " + userId + ", Spending: " + spendingDTO);
+        logger.info("USER: " + userId + ", Spending: " + spendingDTO);
 
         User user = userService.findUser(userId);
         if (user == null) {
