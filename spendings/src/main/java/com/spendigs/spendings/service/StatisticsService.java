@@ -48,24 +48,6 @@ public class StatisticsService {
                         && spending.getDate().getMonth().equals(monthToFind))
                 .toList();
 
-        return groupAndConvertSpendingsToMap(userSpendings);
-    }
-
-    private Map<String, Long> calculateSpendingsYear(User currentUser, int year) {
-        List<Spending> userSpendings = currentUser.getSpendings().stream()
-                .filter(spending -> (spending.getDate().getYear() == year))
-                .toList();
-
-        return groupAndConvertSpendingsToMap(userSpendings);
-    }
-
-    private Map<String, Long> calculateSpendingsTotal(User currentUser) {
-        List<Spending> userSpendings = currentUser.getSpendings();
-
-        return groupAndConvertSpendingsToMap(userSpendings);
-    }
-
-    private Map<String, Long> groupAndConvertSpendingsToMap(List<Spending> userSpendings) {
         Map<String, List<Spending>> collect = userSpendings.stream()
                 .collect(Collectors.groupingBy(Spending::getCategory));
 
@@ -73,6 +55,46 @@ public class StatisticsService {
 
         Map<String, Long> statistic = new HashMap<>();
 
+        for (String category : collect.keySet()) {
+            statistic.put(category, collect.get(category).stream()
+                    .mapToLong(Spending::getAmount)
+                    .sum());
+        }
+        System.out.println(statistic);
+        return statistic;
+    }
+
+    private Map<String, Long> calculateSpendingsYear(User currentUser, int year) {
+        // okay to use whole 'database' of spendings for memory usage?
+        List<Spending> userSpendings = currentUser.getSpendings().stream()
+                .filter(spending -> (spending.getDate().getYear()) == year)
+                .toList();
+
+        Map<String, List<Spending>> collect = userSpendings.stream()
+                .collect(Collectors.groupingBy(Spending::getCategory));
+
+        System.out.println(collect);
+
+        Map<String, Long> statistic = new HashMap<>();
+
+        for (String category : collect.keySet()) {
+            statistic.put(category, collect.get(category).stream()
+                    .mapToLong(Spending::getAmount)
+                    .sum());
+        }
+        System.out.println(statistic);
+        return statistic;
+    }
+
+    private Map<String, Long> calculateSpendingsTotal(User currentUser) {
+        List<Spending> userSpendings = currentUser.getSpendings();
+
+        Map<String, List<Spending>> collect = userSpendings.stream()
+                .collect(Collectors.groupingBy(Spending::getCategory));
+
+        System.out.println(collect);
+
+        Map<String, Long> statistic = new HashMap<>();
         for (String category : collect.keySet()) {
             statistic.put(category, collect.get(category).stream()
                     .mapToLong(Spending::getAmount)
