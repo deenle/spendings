@@ -1,6 +1,5 @@
-package com.spendigs.spendings;
+package com.spendigs.spendings.controller;
 
-import com.spendigs.spendings.controller.Spending;
 import com.spendigs.spendings.dto.SpendingDTO;
 import com.spendigs.spendings.model.User;
 import com.spendigs.spendings.service.StatisticsService;

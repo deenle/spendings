@@ -1,8 +1,10 @@
 package com.spendigs.spendings.service;
 
-import com.spendigs.spendings.SpendingsController;
 import com.spendigs.spendings.controller.Spending;
+import com.spendigs.spendings.controller.SpendingsController;
 import com.spendigs.spendings.model.User;
+import com.spendigs.spendings.repository.SpendingsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,8 +16,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class StatisticsService {
 
+    private final SpendingsRepository spendingsRepository;
 
     public Map<String, Long> calculateSpendingsByUser(User currentUser, Integer year, String month) {
         /*Choosing user case method*/ //TODO need to correct conditions?

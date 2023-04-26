@@ -3,19 +3,19 @@ package com.spendigs.spendings.model;
 import com.spendigs.spendings.controller.Spending;
 import lombok.Data;
 
-import java.util.ArrayList;
+import javax.persistence.Entity;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
+@Entity
 public class User {
 
-    private static final AtomicInteger USER_COUNT = new AtomicInteger(0);
+//    private static final AtomicInteger USER_COUNT = new AtomicInteger(0);
 
     int id;
     String name;
-    CopyOnWriteArrayList<Spending> spendings = new CopyOnWriteArrayList<>();
+    List<Spending> spendings = new CopyOnWriteArrayList<>();
 
     public User(String name){
         this.id = USER_COUNT.getAndIncrement();

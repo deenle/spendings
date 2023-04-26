@@ -2,12 +2,14 @@ package com.spendigs.spendings.controller;
 
 import lombok.Data;
 
+import javax.persistence.Entity;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Entity
 public class Spending {
         private static Set<String> categories = new HashSet<>();
 
