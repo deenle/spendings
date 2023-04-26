@@ -21,10 +21,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SpendingsController {
 
+    // TODO Return ResponseEntity<>?
     private final UserService userService;
     private final StatisticsService statisticsService; // TODO: okay to do like that?
-    public static final Clock clock = Clock.systemDefaultZone();
+
+    // TODO Foresee isLoggable() level!
+    // static or not?
     final Logger logger = LoggerFactory.getLogger(SpendingsController.class);
+    public static final Clock clock = Clock.systemDefaultZone();
 
     // Return All Categories where User spent money
     @GetMapping("/categories")
@@ -36,9 +40,9 @@ public class SpendingsController {
 
     // Add Spending by User
     @PostMapping("/putspending")
-    public void putSpending(@RequestBody SpendingDTO spendingDTO, @RequestHeader("USER-ID") int userId) {
+    public void putSpending(@RequestHeader("USER-ID") int userId, @RequestBody SpendingDTO spendingDTO) {
 //        System.out.println("USER: " + userId + ", Spending: " + spendingDTO);
-        logger.info("USER: " + userId + ", Spending: " + spendingDTO);
+        logger.info("USER: {}, Spending: {}", userId, spendingDTO);
 
         User user = userService.findUser(userId);
         if (user == null) {
