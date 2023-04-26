@@ -1,7 +1,7 @@
 package com.spendigs.spendings.service;
 
-import com.spendigs.spendings.controller.Spending;
 import com.spendigs.spendings.controller.SpendingsController;
+import com.spendigs.spendings.model.Spending;
 import com.spendigs.spendings.model.User;
 import com.spendigs.spendings.repository.SpendingsRepository;
 import lombok.RequiredArgsConstructor;

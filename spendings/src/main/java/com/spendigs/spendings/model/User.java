@@ -1,32 +1,42 @@
 package com.spendigs.spendings.model;
 
-import com.spendigs.spendings.controller.Spending;
 import lombok.Data;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Data
 @Entity
+@Table(name = "Users")
 public class User {
 
-//    private static final AtomicInteger USER_COUNT = new AtomicInteger(0);
+    //    private static final AtomicInteger USER_COUNT = new AtomicInteger(0);
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    int id;
-    String name;
-    List<Spending> spendings = new CopyOnWriteArrayList<>();
+    @Column(name = "name")
+    private String name;
 
-    public User(String name){
-        this.id = USER_COUNT.getAndIncrement();
+    @OneToMany(mappedBy = "owner")
+    private List<Spending> spendings;
+//    List<Spending> spendings = new CopyOnWriteArrayList<>();
+
+    public User(String name) {
+//        this.id = USER_COUNT.getAndIncrement();
         this.name = name;
     }
 
-    public void addSpending(Spending spending){
-        this.spendings.add(spending);
+    public User() {
     }
 
-    public Spending getSpending(int spendingId){
-        return this.spendings.get(spendingId);
+    public void addSpending(Spending spending) {
+//        this.spendings.add(spending);
+    }
+
+    public Spending getSpending(int spendingId) {
+//        return this.spendings.get(spendingId);
+        return null;
     }
 }

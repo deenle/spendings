@@ -20,15 +20,13 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User findUser(int userId) {
-        return users.stream()
-                .filter(user -> user.getId() == userId)
-                .findFirst().orElse(null);
+    public User findOne(int userId) {
+        return userRepository.findById(userId).orElse(null);
     }
 
     // Necessity of method?
     public List<User> findUser(String userName) {
-        return  users.stream()
+        return users.stream()
                 .filter(user -> user.getName().equalsIgnoreCase(userName))
                 .collect(Collectors.toList());
     }

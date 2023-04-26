@@ -1,6 +1,7 @@
 package com.spendigs.spendings.controller;
 
 import com.spendigs.spendings.dto.SpendingDTO;
+import com.spendigs.spendings.model.Spending;
 import com.spendigs.spendings.model.User;
 import com.spendigs.spendings.service.StatisticsService;
 import com.spendigs.spendings.service.UserService;
@@ -32,7 +33,7 @@ public class SpendingsController {
     // Return All Categories where User spent money
     @GetMapping("/categories")
     public Set<String> getCategories(@RequestHeader("USER-ID") int userId) {
-        User user = userService.findUser(userId);
+        User user = userService.findOne(userId);
         List<Spending> spendings = user.getSpendings();
         return spendings.stream().map(Spending::getCategory).collect(Collectors.toSet());
     }
@@ -43,7 +44,7 @@ public class SpendingsController {
 //        System.out.println("USER: " + userId + ", Spending: " + spendingDTO);
         logger.info("USER: {}, Spending: {}", userId, spendingDTO);
 
-        User user = userService.findUser(userId);
+        User user = userService.findOne(userId);
         if (user == null) {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
@@ -58,7 +59,7 @@ public class SpendingsController {
                                           @RequestParam(required = false) Integer year,
                                           @RequestParam(required = false) String month) {
         /* Looking for User */
-        User currentUser = userService.findUser(userId);
+        User currentUser = userService.findOne(userId);
         if (currentUser == null) {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
