@@ -1,19 +1,8 @@
-package com.spendigs.spendings.service;
+package com.spendings.spendings.service;
 
-import com.spendigs.spendings.controller.SpendingsController;
-import com.spendigs.spendings.model.Spending;
-import com.spendigs.spendings.model.User;
-import com.spendigs.spendings.repository.SpendingsRepository;
+import com.spendings.spendings.repositories.SpendingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +10,8 @@ public class StatisticsService {
 
     private final SpendingsRepository spendingsRepository;
 
-    public Map<String, Long> calculateSpendingsByUser(User currentUser, Integer year, String month) {
-        /*Choosing user case method*/ //TODO need to correct conditions?
+    /*public Map<String, Long> calculateSpendingsByUser(User currentUser, Integer year, String month) {
+     *//*Choosing user case method*//* //TODO need to correct conditions?
         if ((year == null && month == null) || (year != null && (year < 1900 || year >= LocalDate.MAX.getYear()))) {
             return calculateSpendingsTotal(currentUser);
         } else if (year != null && (month == null || "".equalsIgnoreCase(month))) {
@@ -82,5 +71,5 @@ public class StatisticsService {
         }
         System.out.println(statistic);
         return statistic;
-    }
+    }*/
 }

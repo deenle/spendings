@@ -1,20 +1,18 @@
-package com.spendigs.spendings.controller;
+package com.spendings.spendings.controller;
 
-import com.spendigs.spendings.dto.SpendingDTO;
-import com.spendigs.spendings.model.Spending;
-import com.spendigs.spendings.model.User;
-import com.spendigs.spendings.service.StatisticsService;
-import com.spendigs.spendings.service.UserService;
+import com.spendings.spendings.dto.SpendingDTO;
+import com.spendings.spendings.model.Spending;
+import com.spendings.spendings.model.User;
+import com.spendings.spendings.service.StatisticsService;
+import com.spendings.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Clock;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1")
@@ -23,7 +21,7 @@ public class SpendingsController {
 
     // TODO Return ResponseEntity<>?
     private final UserService userService;
-    private final StatisticsService statisticsService; // TODO: okay to do like that?
+    private final StatisticsService statisticsService;
 
     // TODO Foresee isLoggable() level!
     // static or not?
@@ -34,8 +32,9 @@ public class SpendingsController {
     @GetMapping("/categories")
     public Set<String> getCategories(@RequestHeader("USER-ID") int userId) {
         User user = userService.findOne(userId);
-        List<Spending> spendings = user.getSpendings();
-        return spendings.stream().map(Spending::getCategory).collect(Collectors.toSet());
+//        List<Spending> spendings = user.getSpendings();
+//        return spendings.stream().map(Spending::getCategory).collect(Collectors.toSet());
+        return null;
     }
 
     // Add Spending by User
@@ -64,7 +63,8 @@ public class SpendingsController {
             throw new IllegalArgumentException("User with ID " + userId + " not found");
         }
         /* Transfer to StatisticService ==> */
-        return statisticsService.calculateSpendingsByUser(currentUser, year, month);
+//        return statisticsService.calculateSpendingsByUser(currentUser, year, month);
+        return null;
     }
 
 

@@ -1,4 +1,4 @@
-package com.spendigs.spendings.model;
+package com.spendings.spendings.model;
 
 import lombok.Data;
 

@@ -1,9 +1,8 @@
-package com.spendigs.spendings.model;
+package com.spendings.spendings.model;
 
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity
@@ -19,8 +18,8 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "owner")
-    private List<Spending> spendings;
+//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+//    private List<Spending> spendings;
 //    List<Spending> spendings = new CopyOnWriteArrayList<>();
 
     public User(String name) {

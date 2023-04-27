@@ -1,4 +1,4 @@
-package com.spendigs.spendings.dto;
+package com.spendings.spendings.dto;
 
 import lombok.Data;
 
