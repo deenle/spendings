@@ -43,3 +43,8 @@ USER-ID: userID
 **TODO: Add DB (Postgre, H2?)**
 
 ------
+
+2 options for date:
+
+1. if empty - add by server
+2. if provided - save to DB

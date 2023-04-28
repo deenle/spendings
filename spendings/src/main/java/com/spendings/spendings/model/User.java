@@ -1,15 +1,20 @@
 package com.spendings.spendings.model;
 
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
 @Table(name = "Users")
 public class User {
 
-    //    private static final AtomicInteger USER_COUNT = new AtomicInteger(0);
+    // TODO why non-static not working?
+    static final Logger logger = LoggerFactory.getLogger(User.class);
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,24 +23,34 @@ public class User {
     @Column(name = "name")
     private String name;
 
-//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-//    private List<Spending> spendings;
-//    List<Spending> spendings = new CopyOnWriteArrayList<>();
+    //    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private List<Spending> spendings;
 
     public User(String name) {
-//        this.id = USER_COUNT.getAndIncrement();
+        logger.debug("User constructor with name: {} working", name);
         this.name = name;
     }
 
     public User() {
+        logger.debug("Empty User constructor working");
     }
 
-    public void addSpending(Spending spending) {
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    /*public void addSpending(Spending spending) {
 //        this.spendings.add(spending);
     }
 
     public Spending getSpending(int spendingId) {
 //        return this.spendings.get(spendingId);
         return null;
-    }
+    }*/
 }

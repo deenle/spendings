@@ -1,14 +1,30 @@
 package com.spendings.spendings.service;
 
+import com.spendings.spendings.model.Spending;
 import com.spendings.spendings.repositories.SpendingsRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class StatisticsService {
+    final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
 
     private final SpendingsRepository spendingsRepository;
+
+    public Spending findOne(int id) {
+        logger.debug("findOne working for id: {} from {} class working", id, StatisticsService.class.getSimpleName());
+        return spendingsRepository.findById(id).orElse(null);
+    }
+
+    public List<Spending> findAll() {
+        logger.debug("findAll from {} class working", StatisticsService.class.getSimpleName());
+        return spendingsRepository.findAll();
+    }
 
     /*public Map<String, Long> calculateSpendingsByUser(User currentUser, Integer year, String month) {
      *//*Choosing user case method*//* //TODO need to correct conditions?

@@ -18,17 +18,17 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    final Logger logger = LoggerFactory.getLogger(SpendingsController.class);
+    final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping()
     public List<User> getAllUsers() {
-        logger.info("Get all users at {}", UserController.class.getSimpleName());
+        logger.debug("getAllUsers working from {}", UserController.class.getSimpleName());
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
     public User getOneUserById(@PathVariable("id") int id) {
-        logger.info("Get user by id: {} at {}", id, UserController.class.getSimpleName());
+        logger.debug("getUserById working for id: {} from {}", id, UserController.class.getSimpleName());
         return userService.findOne(id);
     }
 }
