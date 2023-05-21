@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SpendingsRepository extends JpaRepository<Spending, Integer> {
+public interface SpendingRepository extends JpaRepository<Spending, Integer> {
+    // TODO Need to add any method? findAll() etc..
 }

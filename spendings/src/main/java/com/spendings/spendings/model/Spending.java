@@ -1,22 +1,19 @@
 package com.spendings.spendings.model;
 
 import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.Clock;
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
+@Slf4j
 @Entity
 @Table(name = "Spendings")
 public class Spending {
-
-        static final Logger logger = LoggerFactory.getLogger(Spending.class);
 
         @Id
         @Column(name = "id")
@@ -36,24 +33,22 @@ public class Spending {
         private double amount;
 
         @Column(name = "date")
-        @Temporal(TemporalType.DATE)
         @DateTimeFormat(pattern = "dd/MM/yyyy")
-        private Date date; // to add by server
+        private LocalDate date; // to add by server
 
         public Spending(Category category, double amount, Clock createdTime) {
 //                category = category.toUpperCase();
 //                categories.add(category);
-                logger.debug("Spending constructor working with category {}, amount  {}, createdTime {}",
+                log.debug("Spending constructor working with category {}, amount  {}, createdTime {}",
                         category, amount, createdTime);
 
                 this.category = category;
                 this.amount = amount;
-                this.date = Date.from(Instant.now(createdTime));
-
+                this.date = LocalDate.now(createdTime);
         }
 
         public Spending() {
-                logger.debug("Empty Spending constructor working");
+                log.debug("Empty Spending constructor working");
         }
 
         @Override

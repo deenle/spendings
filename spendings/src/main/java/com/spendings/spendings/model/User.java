@@ -1,19 +1,16 @@
 package com.spendings.spendings.model;
 
 import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Data
 @Entity
+@Slf4j
 @Table(name = "Users")
 public class User {
-
-    // TODO why non-static not working?
-    static final Logger logger = LoggerFactory.getLogger(User.class);
 
     @Id
     @Column(name = "id")
@@ -29,12 +26,12 @@ public class User {
     private List<Spending> spendings;
 
     public User(String name) {
-        logger.debug("User constructor with name: {} working", name);
+        log.debug("User constructor with name: {} working", name);
         this.name = name;
     }
 
     public User() {
-        logger.debug("Empty User constructor working");
+        log.debug("Empty User constructor working");
     }
 
     @Override
