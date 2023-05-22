@@ -4,13 +4,18 @@ import com.spendings.spendings.dto.SpendingDTO;
 import com.spendings.spendings.model.Category;
 import com.spendings.spendings.model.Spending;
 import com.spendings.spendings.model.User;
+import com.spendings.spendings.service.SpendingService;
 import com.spendings.spendings.service.StatisticsService;
 import com.spendings.spendings.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Map;
 
 @Slf4j
@@ -20,9 +25,9 @@ import java.util.Map;
 public class SpendingController {
 
     // TODO Need to return ResponseEntity<?> ?
-//    private final UserService userService;
     private final StatisticsService statisticsService;
     private final UserService userService;
+    private final SpendingService spendingService;
 
     // TODO where is better to use Clock?
     public static final Clock clock = Clock.systemDefaultZone();
@@ -38,16 +43,29 @@ public class SpendingController {
 
     // Add Spending by User
     @PostMapping("/putspending")
-    public void putSpending(@RequestHeader("USER-ID") int userId, @RequestBody SpendingDTO spendingDTO) {
+    public ResponseEntity<HttpStatus> putSpending(@RequestHeader("USER-ID") int userId, @
+            RequestBody @Valid SpendingDTO spendingDTO
+                                                  //TODO + lBindingResult?
+    ) {
         log.debug("USER: {}, Spending: {}", userId, spendingDTO);
 
-//        User user = userService.findOne(userId);
-//        if (user == null) {
-//            throw new IllegalArgumentException("User with ID " + userId + " not found");
-//        }
+        User user = userService.findOne(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User with ID " + userId + " not found");
+        }
 
-//        Spending spending = new Spending(spendingDTO.getCategory(), spendingDTO.getAmount(), clock);
-//        user.addSpending(spending);
+        if (spendingDTO.getDate() == null) {
+            spendingDTO.setDate(LocalDate.now(clock));
+        }
+        Spending spending = Spending.builder()
+                .category(spendingDTO.getCategory())
+                .amount(spendingDTO.getAmount())
+                .date(spendingDTO.getDate())
+                .owner(user)
+                .build();
+        spendingService.save(spending);
+        //        spendingService.addSpendingByUser(user, spending);
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
     // Collect Spending Statistic per User
@@ -71,7 +89,7 @@ public class SpendingController {
     @GetMapping("/{id}")
     public SpendingDTO getSpendingById(@PathVariable(name = "id") int id) {
         log.debug("getSpendingById working for id: {} working from {}", id, SpendingController.class.getSimpleName());
-        Spending spending = statisticsService.findOne(id);
+        Spending spending = spendingService.findOne(id);
         return SpendingDTO.builder()
                 .amount(spending.getAmount())
                 .category(spending.getCategory())

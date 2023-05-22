@@ -1,17 +1,23 @@
 package com.spendings.spendings.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.time.Clock;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @Slf4j
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "Spendings")
 public class Spending {
 
@@ -20,23 +26,26 @@ public class Spending {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         int id;
 
-        // TODO Why Bi-direct not working?
-//        @ManyToOne
+        //        @JsonIgnore
+        @ManyToOne
+        @JoinColumn(name = "user_id")
 //        @JoinColumn(name = "user_id", referencedColumnName = "id")
-//        private User owner;
+        private User owner;
 
         @Enumerated(EnumType.STRING)
         @Column(name = "category")
+        @NotEmpty
         private Category category;
 
         @Column(name = "amount")
-        private double amount;
+        @Min(value = 0)
+        private Double amount;
 
         @Column(name = "date")
         @DateTimeFormat(pattern = "dd/MM/yyyy")
-        private LocalDate date; // to add by server
+        private LocalDate date;
 
-        public Spending(Category category, double amount, Clock createdTime) {
+        public Spending(Category category, Double amount, LocalDate createdTime) {
 //                category = category.toUpperCase();
 //                categories.add(category);
                 log.debug("Spending constructor working with category {}, amount  {}, createdTime {}",
@@ -44,12 +53,13 @@ public class Spending {
 
                 this.category = category;
                 this.amount = amount;
-                this.date = LocalDate.now(createdTime);
+                //TODO Howto use Clock here?
+                this.date = createdTime;
         }
 
-        public Spending() {
-                log.debug("Empty Spending constructor working");
-        }
+//        public Spending() {
+//                log.debug("Empty Spending constructor working");
+//        }
 
         @Override
         public String toString() {
@@ -59,10 +69,5 @@ public class Spending {
                         ", amount=" + amount +
                         ", date=" + date +
                         '}';
-        }
-
-        public static Set<String> getSpendingCategories() {
-//                return categories;
-                return null;
         }
 }

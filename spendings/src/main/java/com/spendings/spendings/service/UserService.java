@@ -20,7 +20,7 @@ public class UserService {
     public User findOne(int userId) {
         log.debug("findOne for id: {} from {} class working", userId, UserService.class.getSimpleName());
 
-        return userRepository.findById(userId).orElse(null);
+        return userRepository.getReferenceById(userId);
     }
 
     public List<User> findAll() {
@@ -28,4 +28,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional
+    public void save(User user) {
+        userRepository.save(user);
+    }
 }

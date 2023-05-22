@@ -1,6 +1,9 @@
 package com.spendings.spendings.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -9,6 +12,9 @@ import java.util.List;
 @Data
 @Entity
 @Slf4j
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "Users")
 public class User {
 
@@ -20,9 +26,9 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    //    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
     private List<Spending> spendings;
 
     public User(String name) {
@@ -30,9 +36,9 @@ public class User {
         this.name = name;
     }
 
-    public User() {
-        log.debug("Empty User constructor working");
-    }
+//    public User() {
+//        log.debug("Empty User constructor working");
+//    }
 
     @Override
     public String toString() {
@@ -41,13 +47,4 @@ public class User {
                 ", name='" + name + '\'' +
                 '}';
     }
-
-    /*public void addSpending(Spending spending) {
-//        this.spendings.add(spending);
-    }
-
-    public Spending getSpending(int spendingId) {
-//        return this.spendings.get(spendingId);
-        return null;
-    }*/
 }

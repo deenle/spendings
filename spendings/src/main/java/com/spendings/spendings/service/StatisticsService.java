@@ -3,7 +3,6 @@ package com.spendings.spendings.service;
 import com.spendings.spendings.model.Category;
 import com.spendings.spendings.model.Spending;
 import com.spendings.spendings.model.User;
-import com.spendings.spendings.repositories.SpendingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,17 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StatisticsService {
 
-    private final SpendingRepository spendingsRepository;
+//    private final SpendingRepository spendingRepository;
 
-    public Spending findOne(int id) {
-        log.debug("findOne working for id: {} from {} class working", id, StatisticsService.class.getSimpleName());
-        return spendingsRepository.findById(id).orElse(null);
-    }
-
-    public List<Spending> findAll() {
-        log.debug("findAll from {} class working", StatisticsService.class.getSimpleName());
-        return spendingsRepository.findAll();
-    }
 
     public Map<Category, Double> calculateSpendingsByUser(User currentUser, Integer year, String month) {
         //*Choosing user case method*//* //TODO need to correct conditions?
