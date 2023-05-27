@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+//TODO refactor to record?
 public class UserDTO {
 
     private String name;

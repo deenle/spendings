@@ -21,7 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/")
+    @GetMapping()
     public List<UserDTO> getAllUsers() {
         log.debug("getAllUsers working from {}", UserController.class.getSimpleName());
         return userService.findAll().stream().map(

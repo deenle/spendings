@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
+//TODO refactor to record?
 public class SpendingDTO {
 
     @NotEmpty
