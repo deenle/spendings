@@ -1,8 +1,10 @@
-package com.spendigs.spendings.service;
+package com.spendings.spendings.service;
 
-import com.spendigs.spendings.SpendingsController;
-import com.spendigs.spendings.controller.Spending;
-import com.spendigs.spendings.model.User;
+import com.spendings.spendings.model.Category;
+import com.spendings.spendings.model.Spending;
+import com.spendings.spendings.model.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,11 +16,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class StatisticsService {
 
+//    private final SpendingRepository spendingRepository;
 
-    public Map<String, Long> calculateSpendingsByUser(User currentUser, Integer year, String month) {
-        /*Choosing user case method*/ //TODO need to correct conditions?
+
+    public Map<Category, Double> calculateSpendingsByUser(User currentUser, Integer year, String month) {
+        //*Choosing user case method*//* //TODO need to correct conditions?
         if ((year == null && month == null) || (year != null && (year < 1900 || year >= LocalDate.MAX.getYear()))) {
             return calculateSpendingsTotal(currentUser);
         } else if (year != null && (month == null || "".equalsIgnoreCase(month))) {
@@ -28,10 +34,12 @@ public class StatisticsService {
         }
     }
 
-    private Map<String, Long> calculateSpendingsYearMonth(User currentUser, Integer year, String month) {
+    private Map<Category, Double> calculateSpendingsYearMonth(User currentUser, Integer year, String month) {
 
         if (year == null) {
-            year = LocalDate.now(SpendingsController.clock).getYear();
+            // TODO howto use Clock from Controller for testing?
+//            year = LocalDate.now(SpendingsController.clock).getYear();
+            year = LocalDate.now().getYear();
         }
 
         List<Month> monthList = Arrays.asList(Month.values());
@@ -51,7 +59,7 @@ public class StatisticsService {
         return convertSpendingsToMap(userSpendings);
     }
 
-    private Map<String, Long> calculateSpendingsYear(User currentUser, int year) {
+    private Map<Category, Double> calculateSpendingsYear(User currentUser, int year) {
         List<Spending> userSpendings = currentUser.getSpendings().stream()
                 .filter(spending -> (spending.getDate().getYear() == year))
                 .toList();
@@ -59,21 +67,21 @@ public class StatisticsService {
         return convertSpendingsToMap(userSpendings);
     }
 
-    private Map<String, Long> calculateSpendingsTotal(User currentUser) {
+    private Map<Category, Double> calculateSpendingsTotal(User currentUser) {
         List<Spending> userSpendings = currentUser.getSpendings();
 
         return convertSpendingsToMap(userSpendings);
     }
 
-    private Map<String, Long> convertSpendingsToMap(List<Spending> userSpendings) {
-        Map<String, List<Spending>> collect = userSpendings.stream()
+    private Map<Category, Double> convertSpendingsToMap(List<Spending> userSpendings) {
+        Map<Category, List<Spending>> collect = userSpendings.stream()
                 .collect(Collectors.groupingBy(Spending::getCategory));
 //        System.out.println(collect);
 
-        Map<String, Long> statistic = new HashMap<>();
-        for (String category : collect.keySet()) {
+        Map<Category, Double> statistic = new HashMap<>();
+        for (Category category : collect.keySet()) {
             statistic.put(category, collect.get(category).stream()
-                    .mapToLong(Spending::getAmount)
+                    .mapToDouble(Spending::getAmount)
                     .sum());
         }
         System.out.println(statistic);
